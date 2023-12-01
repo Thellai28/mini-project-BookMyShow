@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-public class User extends BaseModel{
+public class  User extends BaseModel{
 
     private String email;
 

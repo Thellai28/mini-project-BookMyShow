@@ -18,6 +18,4 @@ public class ShowSeatType extends  BaseModel{
 
     private int price;
 
-
-
 }

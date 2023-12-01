@@ -11,10 +11,9 @@ import lombok.Setter;
 @Entity
 public class Payment extends  BaseModel{
 
-    private String refNo;
+    private String refNumber;
 
-    private int amount; // why int, why not double ?
-
+    private int amount;
 
     @Enumerated(EnumType.ORDINAL)
     private PaymentProvider paymentProvider;

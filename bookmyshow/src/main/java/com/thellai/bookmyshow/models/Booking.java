@@ -22,9 +22,12 @@ public class Booking extends BaseModel{
         can exist in multiple bookings.
     */
     private List<ShowSeat> showSeat;
+
     @ManyToOne
     private User user;
+
     private Date bookedAt;
+
     @ManyToOne
     private Show show;
 

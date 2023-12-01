@@ -10,6 +10,4 @@ import lombok.Setter;
 public class Movie extends  BaseModel{
 
     String name;
-
-
 }

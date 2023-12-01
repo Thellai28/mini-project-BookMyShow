@@ -22,5 +22,7 @@ public class ShowSeat extends BaseModel{
     @Enumerated(EnumType.ORDINAL)
     private ShowSeatStatus showSeatStatus;
 
-    private Date blockedAt;
+    private Date bookedAt;
+    // THis date will be filled at the time of booking.
+
 }
