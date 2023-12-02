@@ -26,7 +26,7 @@ public class BookingController {
     @Autowired
     private ShowSeatRepository showSeatRepository;
 
-    private Map<Integer, ShowSeat> showSeatsCacheMap = new HashMap<>();
+    private Map<Integer, ShowSeat> showSeatsLocalCacheMap = new HashMap<>();
 
 
 
@@ -36,8 +36,8 @@ public class BookingController {
     public void bookMovie(){
 
         Movie selectedMovie = displayMoviesForSelection();
-        Show showRunningThisMovie = showRepository.findByMovie(selectedMovie);
-        List<ShowSeat> seatsInThisShow = fetchAllSeatsInShow(showRunningThisMovie);
+        Show showRunningSelectedMovie = showRepository.findByMovie(selectedMovie);
+        List<ShowSeat> seatsInThisShow = fetchAllSeatsInShow(showRunningSelectedMovie);
 
         List<ShowSeat> finalSelectedSeatsForBooking;
         boolean moveToPaymentSection = false;
@@ -47,14 +47,14 @@ public class BookingController {
             int seatsAvailableCount = displaySeatsForSelection(seatsInThisShow);
             finalSelectedSeatsForBooking = selectSeatsForBooking(seatsAvailableCount);
 
-            if( finalSelectedSeatsForBooking.size() == 0 ){
+            if( finalSelectedSeatsForBooking.size() == 0 ){ // EDGE CASE HANDLING
                 // sometimes, user won't select seats, they'll be checking the seat availability :
                 isUserDiscardedSelection = true;
                 break;
             }
             boolean isSeatSelectionFinal = BlockedSeatFinalVerification( finalSelectedSeatsForBooking );
 
-            if( !isSeatSelectionFinal ){
+            if( !isSeatSelectionFinal ){ // If user makes wrong selection, he'll get another chance to select :
                 revertSelectedSeatStatus( finalSelectedSeatsForBooking );
                 moveToPaymentSection = false;
             }else moveToPaymentSection = true;
@@ -106,17 +106,17 @@ public class BookingController {
         for( int row = 0; row < 3; row++ ){ // im hardcoding the size of rows & col
             for( int col = 0; col < 4; col ++  ){
 
-                // Getting the seat no & storing in map.
+                // Getting the seat no & storing in local cache Map for faster access & verification.
                 ShowSeat currShowSeat = showSeats.get( idx++ );
                 int seatNo = currShowSeat.getSeat().getSeatNO();
-                showSeatsCacheMap.put( seatNo, currShowSeat);
+                showSeatsLocalCacheMap.put( seatNo, currShowSeat);
 
-                ShowSeatStatus showSeatStatus = currShowSeat.getShowSeatStatus();
-                if( showSeatStatus.equals( ShowSeatStatus.AVAILABLE) ){
+                ShowSeatStatus currShowSeatStatus = currShowSeat.getShowSeatStatus();
+                if( currShowSeatStatus.equals( ShowSeatStatus.AVAILABLE) ){
                     availableSeatCount++ ;
                 }
 
-                String seatDetails = "---- set " + seatNo +" : "  +currShowSeat.getShowSeatStatus() + "  ----";
+                String seatDetails = "---- set " + seatNo +" : "  + currShowSeatStatus + "  ----";
                 System.out.print( seatDetails);
             }
             createSpaceInTerminal(4); // creates 4 line in terminal.
@@ -145,11 +145,11 @@ public class BookingController {
 
                 System.out.println( "Please enter the seat number here " );
                 int seatNo = sc.nextInt();
-                ShowSeat currSelectedSeat = showSeatsCacheMap.get(seatNo);
+                ShowSeat currSelectedSeat = showSeatsLocalCacheMap.get(seatNo);
                 if( currSelectedSeat.getShowSeatStatus().equals( ShowSeatStatus.AVAILABLE) ){
 
                     seatsAvailableCount--;
-                    selectedShowSeats.add( showSeatsCacheMap.get(seatNo) );
+                    selectedShowSeats.add( showSeatsLocalCacheMap.get(seatNo) );
                     currSelectedSeat.setShowSeatStatus(ShowSeatStatus.BLOCKED);
                     // updating the status of seat or else user can select same seat more than once.
 
@@ -163,8 +163,7 @@ public class BookingController {
 
             }else isSelectionDone = true;
         }
-        showSeatsCacheMap.clear(); // once the selection is done, we clear the cache :
-        //System.out.println("line 160 : selected seat count " + selectedShowSeats.size() );
+        showSeatsLocalCacheMap.clear(); // once the selection is done, we clear the cache :
         return selectedShowSeats;
     }
 
