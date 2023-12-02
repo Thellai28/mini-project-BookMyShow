@@ -1,20 +1,20 @@
 package com.thellai.bookmyshow.services;
 
-import com.thellai.bookmyshow.dtos.BookMovieResponseDto;
 import com.thellai.bookmyshow.models.*;
 import com.thellai.bookmyshow.repositories.BookingRepository;
 import com.thellai.bookmyshow.repositories.ShowRepository;
 import com.thellai.bookmyshow.repositories.ShowSeatRepository;
 import com.thellai.bookmyshow.repositories.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
 
 @Service
 public class BookingService {

@@ -1,0 +1,8 @@
+select * FROM shows;
+
+insert into shows( movie_id, screen_id )
+Values (4, 1);
+insert into shows( movie_id, screen_id )
+Values (5, 2);
+insert into shows( movie_id, screen_id )
+Values (7, 3);

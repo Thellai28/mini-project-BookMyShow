@@ -1,0 +1,14 @@
+use demodb;
+
+select * FROM screen;
+
+insert into screen ( name )
+values( 'Audi 6' );
+
+insert into screen ( name )
+values( 'Audi 7' );
+
+insert into screen ( name )
+values( 'Audi 8' );
+
+

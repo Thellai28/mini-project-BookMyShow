@@ -3,12 +3,11 @@ package com.thellai.bookmyshow.services;
 import com.thellai.bookmyshow.models.Show;
 import com.thellai.bookmyshow.models.ShowSeat;
 import com.thellai.bookmyshow.models.ShowSeatType;
-import com.thellai.bookmyshow.repositories.ShowSeatRepository;
 import com.thellai.bookmyshow.repositories.ShowSeatTypeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class PricingService {
 
     private ShowSeatTypeRepository showSeatTypeRepository;

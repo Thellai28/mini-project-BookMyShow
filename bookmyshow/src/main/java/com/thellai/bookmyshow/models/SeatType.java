@@ -10,4 +10,6 @@ import lombok.Setter;
 public class SeatType extends BaseModel{
 
     private String name;
+
+    private int price;
 }

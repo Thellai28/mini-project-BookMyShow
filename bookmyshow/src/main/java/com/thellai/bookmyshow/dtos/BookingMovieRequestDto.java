@@ -12,5 +12,5 @@ public class BookingMovieRequestDto {
 
     private Long showId;
 
-    private List<Long> showSeatId;
+    private List<Long> showSeatIds;
 }

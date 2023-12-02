@@ -10,13 +10,13 @@ import lombok.Setter;
 @Entity
 public class Seat extends BaseModel{
 
-    private String number;
+    private int seatNO;
 
     @ManyToOne
     private SeatType seatType;
 
-    private int rowVal;
+    private int rowNO;
 
-    private int colVal;
+    private int ColNO;
 
 }

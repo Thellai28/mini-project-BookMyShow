@@ -1,0 +1,10 @@
+select * FROM seat_type;
+
+INSERT INTO seat_type( name, price)
+Values ( 'Normal', 150 );
+
+INSERT INTO seat_type( name, price)
+Values ( 'Gold', 350 );
+
+INSERT INTO seat_type( name, price)
+Values ( 'Premium', 600 );

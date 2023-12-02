@@ -1,0 +1,14 @@
+USE demodb;
+
+SELECT * FROM movie;
+
+
+insert into movie( created_at, last_modified_at, name )
+values ( CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Avatar 2');
+
+insert into movie( created_at, last_modified_at, name )
+values ( CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Nemo');
+
+insert into movie( created_at, last_modified_at, name )
+values ( CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Toy Story');
+

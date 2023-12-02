@@ -4,13 +4,19 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
 @Getter
 @Setter
+
 @MappedSuperclass // Meaning this is the super class for many models.
+@EntityListeners( AuditingEntityListener.class )
+// Generally use in BaseModel classes, it can also be used directly on
+// @Entity & @Configuration class as well depending on the requirement.
 public class BaseModel {
+
     @Id // To mention,this attribute is the primary key for this table :
     @GeneratedValue ( strategy = GenerationType.IDENTITY) // To identity the primary key will increment automatically
     private Long id;
@@ -19,7 +25,7 @@ public class BaseModel {
     @Temporal( value = TemporalType.TIMESTAMP )
     private Date createdAt;
 
-    @LastModifiedBy
+    @LastModifiedDate
     @Temporal( value = TemporalType.TIMESTAMP)
     private Date lastModifiedAt;
 }
@@ -54,5 +60,13 @@ public class BaseModel {
         The @MappedSuperclass annotation in Java, specifically in the context of JPA (Java Persistence API), is used to
         designate a class as a superclass whose mappings are applied to the entities that inherit from it. It allows you
          to define common fields and mappings in a superclass, and those will be inherited by its subclasses.
+
+<-------------------------------------------------------------------------------------------------------------------->
+        AuditingEntityListener.class
+
+        This class is responsible for actively looking lifecycle changes in entities that is annotated with prePost or preUpdate
+        Or any other lifecycle changes and do something depending on our logic. In this case, the modification date and
+        created date will be listened by AuditingEntityListener.class. Any lifecycle change in inherited classes also
+        will be listened and logic will be executed.
     */
 
