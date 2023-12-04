@@ -26,6 +26,9 @@ public class BookingController {
     @Autowired
     private ShowSeatRepository showSeatRepository;
 
+    @Autowired
+    private PaymentController paymentController;
+
     private Map<Integer, ShowSeat> showSeatsLocalCacheMap = new HashMap<>();
 
 
@@ -39,7 +42,7 @@ public class BookingController {
         Show showRunningSelectedMovie = showRepository.findByMovie(selectedMovie);
         List<ShowSeat> seatsInThisShow = fetchAllSeatsInShow(showRunningSelectedMovie);
 
-        List<ShowSeat> finalSelectedSeatsForBooking;
+        List<ShowSeat> finalSelectedSeatsForBooking = new ArrayList<>();
         boolean moveToPaymentSection = false;
         boolean isUserDiscardedSelection = false;
 
@@ -58,6 +61,10 @@ public class BookingController {
                 revertSelectedSeatStatus( finalSelectedSeatsForBooking );
                 moveToPaymentSection = false;
             }else moveToPaymentSection = true;
+        }
+
+        if( ! isUserDiscardedSelection && moveToPaymentSection ){
+            paymentController.initializePaymentProcess(finalSelectedSeatsForBooking);
         }
     }
 
@@ -180,7 +187,7 @@ public class BookingController {
         for( int i = 0; i < finalSelectedSeatsForBooking.size(); i++ ){
             ShowSeat currShowSeat = finalSelectedSeatsForBooking.get(i);
             createSpaceInTerminal(1);
-            System.out.println( i+1 + ". seat number : " + currShowSeat.getSeat().getSeatNO() );
+            System.out.println( i+1 + ". s.No: " + currShowSeat.getSeat().getSeatNO() );
         }
 
         String confirmationMessage = "Please select yes, if the blocked seats are correct\n"
