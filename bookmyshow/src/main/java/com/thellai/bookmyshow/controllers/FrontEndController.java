@@ -44,9 +44,10 @@ public class FrontEndController {
             int response = optionProvider();
 
             Booking ticket = directToRespectiveFunction( response, fethcedUser.get());
-            if( ticket !=  null ) showBookedTicketDetails( ticket );
-
-            isTerminated = true;
+            if( ticket !=  null ){
+                showBookedTicketDetails( ticket );
+                isTerminated = true;
+            }
         }
     }
 
@@ -71,6 +72,8 @@ public class FrontEndController {
 
     public int optionProvider( ){
         createSpaceInTerminal(3);
+        System.out.println("----------------------HOME PAGE ---------------------------------");
+        createSpaceInTerminal(2);
         String optionMessage = "Please choose an option : \n"+
                 "1. Book a movie \n" +
                 "2. Cancel a movie \n";

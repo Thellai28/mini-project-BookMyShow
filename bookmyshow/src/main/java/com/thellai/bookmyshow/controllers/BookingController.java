@@ -87,6 +87,9 @@ public class BookingController {
 
 
     public Movie displayMoviesForSelection(){
+        System.out.println("------------SHOWS CURRENTLY RUNNING-----------------------------");
+        createSpaceInTerminal(2);
+
         System.out.println("Choose the movie");
         List<Movie> movies = movieRepository.findAll();
         for( int i = 0; i < movies.size(); i++ ){
@@ -166,7 +169,7 @@ public class BookingController {
                     // updating the status of seat or else user can select same seat more than once.
 
                     System.out.println(
-                            "seat No " + seatNo + " is blocker for booking, remaining available seats "
+                            "seat No " + seatNo + " is blocked for booking, remaining available seats "
                                     + seatsAvailableCount );
                     createSpaceInTerminal(2);
                 }else{
