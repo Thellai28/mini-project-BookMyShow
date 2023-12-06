@@ -1,22 +1,21 @@
 package com.thellai.bookmyshow.controllers;
 
 
-import com.thellai.bookmyshow.models.Payment;
-import com.thellai.bookmyshow.models.PaymentProvider;
-import com.thellai.bookmyshow.models.ShowSeat;
-import com.thellai.bookmyshow.models.ShowSeatStatus;
+import com.thellai.bookmyshow.models.*;
+import com.thellai.bookmyshow.repositories.BookingRepository;
 import com.thellai.bookmyshow.repositories.PaymentRepository;
 import com.thellai.bookmyshow.repositories.ShowSeatRepository;
 import com.thellai.bookmyshow.services.PricingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 @Controller
 public class PaymentController {
-    private Scanner sc = new Scanner( System.in);
+    private Scanner sc = new Scanner( System.in );
 
     @Autowired
     private PricingService pricingService;
@@ -27,7 +26,11 @@ public class PaymentController {
     @Autowired
     private PaymentRepository paymentRepository;
 
-    public void initializePaymentProcess( List<ShowSeat> finalSelectedSeatsForBooking ){
+
+    @Autowired
+    private BookingRepository bookingRepository;
+
+    public void initializePaymentProcess( User loggedInUser, List<ShowSeat> finalSelectedSeatsForBooking ){
         int amount = pricingService.calculatePrice(finalSelectedSeatsForBooking);
         int response = showPaymentOptions();
         boolean isPaid = requestMoneyTransfer( response, amount );
@@ -35,7 +38,75 @@ public class PaymentController {
             System.out.println("Transaction failed, unable to book tickets.");
             return;
         }
+        Booking bookedTicket = createTicket( loggedInUser, finalSelectedSeatsForBooking, amount, response );
+        showBookedTicketDetails( bookedTicket );
+
+    }
+
+
+    private Booking createTicket( User loggedInUser,
+                                  List<ShowSeat> finalSelectedSeatsForBooking,
+                                  int amount, int response ){
         changeShowSeatStatus(finalSelectedSeatsForBooking);
+
+        Booking ticket = new Booking();
+        ticket.setUser( loggedInUser );
+        ticket.setShowSeat( finalSelectedSeatsForBooking );
+
+        // assuming, user is allowd to book tickets of same show, so getting show details from the first
+        // show seat :
+        ticket.setShow( finalSelectedSeatsForBooking.get(0).getShow() );
+        ticket.setAmount(amount);
+
+        createPayment( amount, ticket, response );
+
+        bookingRepository.save(  ticket );
+        return  ticket;
+    }
+
+
+
+
+
+    private void createPayment( int amount, Booking ticket, int response ){
+        Payment receipt = new Payment();
+        receipt.setAmount(amount);
+        PaymentProvider provider = PaymentProvider.UPI;
+
+        if( response == 2 ){
+            provider =  PaymentProvider.CARD;
+        }else if( response == 3 ){
+            provider = PaymentProvider.NET_BANKING;
+        }else provider = PaymentProvider.unKnown;
+
+        receipt.setPaymentProvider( provider );
+        receipt.setPaymentStatus( PaymentStatus.SUCCESS );
+
+        List<Payment> listOfPayments = new ArrayList<>();
+        listOfPayments.add( receipt );
+        ticket.setPayments( listOfPayments );
+
+        paymentRepository.save( receipt );
+
+    }
+
+
+
+
+    public void showBookedTicketDetails( Booking ticket ){
+        System.out.println(" user : " + ticket.getUser().getName() );
+        System.out.println("Move : " + ticket.getShow().getMovie().getName() );
+        System.out.println("Amount Paid : " + ticket.getAmount() );
+
+        System.out.println("Booked Seats : ");
+        int i = 0;
+        for( ShowSeat currShowSeat : ticket.getShowSeat() ){
+            int seatNo  = currShowSeat.getSeat().getSeatNO();
+            System.out.println(++i + "Seat : " + seatNo );
+        }
+
+        System.out.println("Payment status : " + ticket.getBookingStatus() );
+
     }
 
 
@@ -74,19 +145,6 @@ public class PaymentController {
         return false;
     }
 
-
-    private void savePaymentDetails( int amount, int response ){
-        Payment newPayment = new Payment();
-        newPayment.setAmount( amount );
-
-        PaymentProvider pProvider  = PaymentProvider.UPI;
-        if( response == 2 ) pProvider = PaymentProvider.CARD;
-        else if ( response ==3) pProvider = PaymentProvider.NET_BANKING;
-        else pProvider = PaymentProvider.unKnown;
-
-        newPayment.setPaymentProvider(pProvider);
-        paymentRepository.save( newPayment );
-    }
 
     private void changeShowSeatStatus( List<ShowSeat> showSeats){
         for( ShowSeat currShowSeat : showSeats ){

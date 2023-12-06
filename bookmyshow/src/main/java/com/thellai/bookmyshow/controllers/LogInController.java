@@ -10,13 +10,13 @@ import java.util.Scanner;
 
 @Controller
 public class LogInController {
-    boolean isTerminated = false;
+    private boolean isTerminated = false;
     private Scanner sc = new Scanner( System.in );
 
     @Autowired
     private UserRepository userRepository;
 
-    public boolean logIn(){
+    public Optional<User> logIn(){
         createSpaceInTerminal();
         System.out.println("Enter your email id : ");
         String email = sc.next();
@@ -32,12 +32,11 @@ public class LogInController {
             User existingUser = fetchedUser.get();
             if( email.equals( existingUser.getEmail() ) && password.equals( existingUser.getPassword())){
                 System.out.println("Log in Successful");
-                return true;
             }else System.out.println("log in Failed, enter valid email & password");
         }
-        return false;
+        return fetchedUser;
     }
-    public boolean signup(){
+    public Optional<User> signup(){
         createSpaceInTerminal();
         System.out.println("Enter your name : ");
         String name = sc.next();
@@ -58,7 +57,7 @@ public class LogInController {
         userRepository.save( newUser );
 
         System.out.println("sign in successful !");
-        return true;
+        return Optional.ofNullable(newUser);
     }
 
     public void createSpaceInTerminal(){

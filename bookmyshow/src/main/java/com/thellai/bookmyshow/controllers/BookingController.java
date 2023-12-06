@@ -1,9 +1,6 @@
 package com.thellai.bookmyshow.controllers;
 
-import com.thellai.bookmyshow.models.Movie;
-import com.thellai.bookmyshow.models.Show;
-import com.thellai.bookmyshow.models.ShowSeat;
-import com.thellai.bookmyshow.models.ShowSeatStatus;
+import com.thellai.bookmyshow.models.*;
 import com.thellai.bookmyshow.repositories.MovieRepository;
 import com.thellai.bookmyshow.repositories.ShowRepository;
 import com.thellai.bookmyshow.repositories.ShowSeatRepository;
@@ -36,7 +33,7 @@ public class BookingController {
     //<-------------------------------------MODEL METHODS----------------------------->
 
 
-    public void bookMovie(){
+    public void bookMovie( User loggedInUser){
 
         Movie selectedMovie = displayMoviesForSelection();
         Show showRunningSelectedMovie = showRepository.findByMovie(selectedMovie);
@@ -64,7 +61,7 @@ public class BookingController {
         }
 
         if( ! isUserDiscardedSelection && moveToPaymentSection ){
-            paymentController.initializePaymentProcess(finalSelectedSeatsForBooking);
+            paymentController.initializePaymentProcess( loggedInUser, finalSelectedSeatsForBooking);
         }
     }
 
@@ -152,6 +149,12 @@ public class BookingController {
 
                 System.out.println( "Please enter the seat number here " );
                 int seatNo = sc.nextInt();
+
+                if( ! showSeatsLocalCacheMap.containsKey( seatNo ) ){
+                    // edge case : the user might enter a invalid seat number :
+                    System.out.println("Please enter a valid seat number ");
+                    continue;
+                }
                 ShowSeat currSelectedSeat = showSeatsLocalCacheMap.get(seatNo);
                 if( currSelectedSeat.getShowSeatStatus().equals( ShowSeatStatus.AVAILABLE) ){
 

@@ -1,9 +1,12 @@
 package com.thellai.bookmyshow.controllers;
 
+import com.thellai.bookmyshow.models.Booking;
+import com.thellai.bookmyshow.models.User;
 import com.thellai.bookmyshow.repositories.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.Optional;
 import java.util.Scanner;
 
 @Controller
@@ -33,15 +36,16 @@ public class FrontEndController {
 
     public void executor(){
         while ( !isTerminated ) {
-            isTerminated = welcomeUser();
-            if( !isTerminated )break;
-            optionProvider();
+            Optional<User> fethcedUser= welcomeUser();
+            if( fethcedUser.isEmpty() )break;
+            int response = optionProvider();
+            directToRespectiveFunction( response);
         }
     }
 
 
 
-    public boolean welcomeUser(){
+    public Optional<User> welcomeUser(){
         createSpaceInTerminal();
         String welcomeMessage = "Welcome to bookMyShow :\n" +
                                 "Choose one option shown below\n" +
@@ -58,16 +62,27 @@ public class FrontEndController {
 
 
 
-    public boolean optionProvider(){
+    public int optionProvider( ){
         createSpaceInTerminal();
         String optionMessage = "Please choose an option : \n"+
                 "1. Book a movie \n" +
                 "2. Cancel a movie \n";
         System.out.println(optionMessage);
-        int response = sc.nextInt();
+        return sc.nextInt();
+    }
+
+
+
+    public void directToRespectiveFunction( int response, User loggedInUser ){
         if( response == 1 ){
-            bookingController.bookMovie();
-        }   return false;
+            proceedWithBooking( loggedInUser );
+        }else System.out.println("cancellation module is not implemented");
+
+    }
+
+    public Booking proceedWithBooking( User loggedInUser ){
+        bookingController.bookMovie( loggedInUser );
+        return null;
     }
 
 

@@ -19,7 +19,6 @@ public class BookMyShowApplication implements CommandLineRunner {
 	@Autowired
 	private FrontEndController frontEndController;
 	private Scanner sc = new Scanner( System.in );
-	private boolean isTerminated = false;
 
 	public static void main(String[] args) {
 		SpringApplication.run(BookMyShowApplication.class, args);
