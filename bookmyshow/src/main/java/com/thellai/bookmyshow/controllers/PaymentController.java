@@ -30,16 +30,16 @@ public class PaymentController {
     @Autowired
     private BookingRepository bookingRepository;
 
-    public void initializePaymentProcess( User loggedInUser, List<ShowSeat> finalSelectedSeatsForBooking ){
+    public Booking initializePaymentProcess( User loggedInUser, List<ShowSeat> finalSelectedSeatsForBooking ){
         int amount = pricingService.calculatePrice(finalSelectedSeatsForBooking);
         int response = showPaymentOptions();
         boolean isPaid = requestMoneyTransfer( response, amount );
         if( !isPaid ){
             System.out.println("Transaction failed, unable to book tickets.");
-            return;
+            return null;
         }
         Booking bookedTicket = createTicket( loggedInUser, finalSelectedSeatsForBooking, amount, response );
-        showBookedTicketDetails( bookedTicket );
+        return bookedTicket;
 
     }
 
@@ -47,7 +47,7 @@ public class PaymentController {
     private Booking createTicket( User loggedInUser,
                                   List<ShowSeat> finalSelectedSeatsForBooking,
                                   int amount, int response ){
-        changeShowSeatStatus(finalSelectedSeatsForBooking);
+
 
         Booking ticket = new Booking();
         ticket.setUser( loggedInUser );
@@ -58,9 +58,12 @@ public class PaymentController {
         ticket.setShow( finalSelectedSeatsForBooking.get(0).getShow() );
         ticket.setAmount(amount);
 
-        createPayment( amount, ticket, response );
+        List<Payment> payments = createPayment( amount, response );
+        ticket.setPayments( payments);
 
-        bookingRepository.save(  ticket );
+        //bookingRepository.save(  ticket );
+
+        changeShowSeatStatus(finalSelectedSeatsForBooking);
         return  ticket;
     }
 
@@ -68,7 +71,7 @@ public class PaymentController {
 
 
 
-    private void createPayment( int amount, Booking ticket, int response ){
+    private List<Payment> createPayment( int amount,  int response ){
         Payment receipt = new Payment();
         receipt.setAmount(amount);
         PaymentProvider provider = PaymentProvider.UPI;
@@ -84,30 +87,16 @@ public class PaymentController {
 
         List<Payment> listOfPayments = new ArrayList<>();
         listOfPayments.add( receipt );
-        ticket.setPayments( listOfPayments );
 
-        paymentRepository.save( receipt );
-
-    }
-
-
-
-
-    public void showBookedTicketDetails( Booking ticket ){
-        System.out.println(" user : " + ticket.getUser().getName() );
-        System.out.println("Move : " + ticket.getShow().getMovie().getName() );
-        System.out.println("Amount Paid : " + ticket.getAmount() );
-
-        System.out.println("Booked Seats : ");
-        int i = 0;
-        for( ShowSeat currShowSeat : ticket.getShowSeat() ){
-            int seatNo  = currShowSeat.getSeat().getSeatNO();
-            System.out.println(++i + "Seat : " + seatNo );
-        }
-
-        System.out.println("Payment status : " + ticket.getBookingStatus() );
+       // paymentRepository.save( receipt );
+        return listOfPayments;
 
     }
+
+
+
+
+
 
 
     private int showPaymentOptions(){
@@ -160,10 +149,7 @@ public class PaymentController {
 
     private void printMoneyTransactionMessages( int amount ){
         System.out.println("Payment Successful, received " + amount);
-        System.out.println("Enjoy the movie !!");
     }
-
-
 
 
     public void createSpaceInTerminal(int lines){

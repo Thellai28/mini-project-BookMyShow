@@ -21,7 +21,7 @@ public class PricingService {
 
         for( ShowSeat currShowSeat : finalSelectedSeatsForBooking ){
             for( ShowSeatType currShowSeatType : allShowSeatTypes ){
-                if( currShowSeat.getSeat().getSeatType().equals( currShowSeatType.getSeatType()) ){
+                if( currShowSeat.getSeat().getSeatType().getPrice() == currShowSeatType.getSeatType().getPrice() ){
                     amount += currShowSeatType.getPrice();
                     break; // One seat can have only one type, we found that type, no need to iterate through
                     // the rest of the list :

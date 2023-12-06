@@ -33,7 +33,7 @@ public class BookingController {
     //<-------------------------------------MODEL METHODS----------------------------->
 
 
-    public void bookMovie( User loggedInUser){
+    public Booking bookMovie( User loggedInUser){
 
         Movie selectedMovie = displayMoviesForSelection();
         Show showRunningSelectedMovie = showRepository.findByMovie(selectedMovie);
@@ -60,9 +60,11 @@ public class BookingController {
             }else moveToPaymentSection = true;
         }
 
+        Booking bookedTicket =  null;
         if( ! isUserDiscardedSelection && moveToPaymentSection ){
-            paymentController.initializePaymentProcess( loggedInUser, finalSelectedSeatsForBooking);
+            bookedTicket = paymentController.initializePaymentProcess( loggedInUser, finalSelectedSeatsForBooking);
         }
+        return bookedTicket;
     }
 
 
@@ -120,10 +122,10 @@ public class BookingController {
                     availableSeatCount++ ;
                 }
 
-                String seatDetails = "---- set " + seatNo +" : "  + currShowSeatStatus + "  ----";
+                String seatDetails = "--seat " + seatNo +" : "  + currShowSeatStatus + "---";
                 System.out.print( seatDetails);
             }
-            createSpaceInTerminal(4); // creates 4 line in terminal.
+            createSpaceInTerminal(2); // creates 4 line in terminal.
         }
         return availableSeatCount;
     }
@@ -192,6 +194,8 @@ public class BookingController {
             createSpaceInTerminal(1);
             System.out.println( i+1 + ". s.No: " + currShowSeat.getSeat().getSeatNO() );
         }
+
+        createSpaceInTerminal(2);
 
         String confirmationMessage = "Please select yes, if the blocked seats are correct\n"
                                         + "0.No\n"
